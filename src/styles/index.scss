@@ -1,0 +1,55 @@
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+
+:root {
+  --background-color: #ffffff;
+  --text-color: #333333;
+  --primary-color: #35B8BE;
+  --secondary-color: #f5f5f5;
+  --accent-color: #35B8BE;
+  --border-color: #e0e0e0;
+  --footer-bg: #f9f9f9;
+  --card-bg: #ffffff;
+  --header-bg: #ffffff;
+}
+
+
+body {
+  font-family: 'Inter', sans-serif;
+  background-color: var(--background-color);
+  color: var(--text-color);
+  line-height: 1.6;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.app {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.main-content {
+  flex: 1;
+  padding: 20px 0;
+}
+
+a {
+  color: var(--primary-color);
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+a:hover {
+  color: var(--accent-color);
+}
+
+.theme-toggle:hover {
+  opacity: 0.9;
+}
