@@ -1,0 +1,45 @@
+.phone-tooltip-wrapper {
+    position: relative;
+    color: var(--primary-color);
+    cursor: pointer;
+    font-weight: 500;
+    
+    &:hover {
+      text-decoration: underline;
+      
+      .phone-tooltip {
+        visibility: visible;
+        opacity: 1;
+      }
+    }
+    
+    .phone-tooltip {
+      visibility: hidden;
+      position: absolute;
+      bottom: 100%;
+      left: 50%;
+      transform: translateX(-50%);
+      background-color: #333;
+      color: white;
+      padding: 5px 10px;
+      border-radius: 4px;
+      font-size: 14px;
+      font-weight: normal;
+      white-space: nowrap;
+      opacity: 0;
+      transition: opacity 0.3s;
+      margin-bottom: 5px;
+      z-index: 100;
+      
+      &:after {
+        content: "";
+        position: absolute;
+        top: 100%;
+        left: 50%;
+        margin-left: -5px;
+        border-width: 5px;
+        border-style: solid;
+        border-color: #333 transparent transparent transparent;
+      }
+    }
+  }
