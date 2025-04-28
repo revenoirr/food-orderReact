@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import "./../MenuBrowse/MenuBrowse.scss";
 import PhoneTooltip from "../phoneTooltip/phoneToolTip.jsx";
 import ProductCard from "../ProductCard/ProductCard.jsx";
@@ -6,56 +6,51 @@ import Button from "../Button/Button.jsx";
 import { getMeals } from "../../services/api.jsx";
 import { CartContext } from "../CartContext/CartContext.jsx";
 
-class MenuBrowse extends Component {
-  static contextType = CartContext;
+const MenuBrowse = () => {
+  const { addToCart } = useContext(CartContext);
+  
+  const [activeTab, setActiveTab] = useState("dessert");
+  const [itemQuantities, setItemQuantities] = useState({});
+  const [menuItems, setMenuItems] = useState({
+    dessert: [],
+    dinner: [],
+    breakfast: [],
+  });
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [visibleCount, setVisibleCount] = useState(6);
+  
+  const phoneNumber = "555-123-4567";
+  const hasFetchedMealsRef = React.useRef(false);
 
-  constructor(props) {
-    super(props);
-    this.state = {
-      activeTab: "desert",
-      itemQuantities: {},
-      menuItems: {
-        desert: [],
-        dinner: [],
-        breakfast: [],
-      },
-      isLoading: true,
-      error: null,
-      visibleCount: 6,
-    };
-
-    this.phoneNumber = "555-123-4567";
-    this.hasFetchedMeals = false;
-  }
-
-  componentDidMount() {
-    if (!this.hasFetchedMeals) {
-      this.fetchMeals();
-      this.hasFetchedMeals = true;
+  useEffect(() => {
+    if (!hasFetchedMealsRef.current) {
+      fetchMeals();
+      hasFetchedMealsRef.current = true;
     }
-  }
+  }, []);
 
-  fetchMeals = async () => {
+  const fetchMeals = async () => {
     try {
       console.log("Fetching meals from API...");
       const meals = await getMeals();
       console.log("API response:", meals);
 
       const categoryMapping = {
-        Dessert: "desert",
+        Dessert: "dessert",
         Dinner: "dinner",
         Breakfast: "breakfast",
       };
 
       const categorizedMeals = {
-        desert: [],
+        dessert: [],
         dinner: [],
         breakfast: [],
       };
 
       meals.forEach((meal) => {
         const apiCategory = meal.category;
-        const appCategory = categoryMapping[apiCategory] || "desert";
+        const appCategory = categoryMapping[apiCategory] || "dessert";
 
         if (categorizedMeals[appCategory]) {
           categorizedMeals[appCategory].push(meal);
@@ -64,10 +59,8 @@ class MenuBrowse extends Component {
 
       console.log("Categorized meals:", categorizedMeals);
 
-      this.setState({
-        menuItems: categorizedMeals,
-        isLoading: false,
-      });
+      setMenuItems(categorizedMeals);
+      setIsLoading(false);
     } catch (error) {
       console.error("Error fetching meals:", error);
 
@@ -105,57 +98,47 @@ class MenuBrowse extends Component {
       ];
 
       const categorizedMeals = {
-        desert: fallbackMeals.filter((meal) => meal.category === "Dessert"),
+        dessert: fallbackMeals.filter((meal) => meal.category === "Dessert"),
         dinner: fallbackMeals.filter((meal) => meal.category === "Dinner"),
-        breakfast: fallbackMeals.filter(
-          (meal) => meal.category === "Breakfast"
-        ),
+        breakfast: fallbackMeals.filter((meal) => meal.category === "Breakfast"),
       };
 
       console.log("Using fallback meals:", categorizedMeals);
 
-      this.setState({
-        menuItems: categorizedMeals,
-        isLoading: false,
-        error: `${error.message} (Using sample data instead)`,
-      });
+      setMenuItems(categorizedMeals);
+      setIsLoading(false);
+      setError(`${error.message} (Using sample data instead)`);
     }
   };
 
-  handleTabChange = (tab) => {
-    this.setState({ activeTab: tab, visibleCount: 6 });
+  const handleTabChange = (tab) => {
+    setActiveTab(tab);
+    setVisibleCount(6);
   };
 
-  updateQuantity = (itemId, value) => {
-    this.setState((prevState) => ({
-      itemQuantities: {
-        ...prevState.itemQuantities,
-        [itemId]: value,
-      },
+  const updateQuantity = (itemId, value) => {
+    setItemQuantities(prevQuantities => ({
+      ...prevQuantities,
+      [itemId]: value,
     }));
   };
 
-  handleAddToCart = (item) => {
-    const { addToCart } = this.context;
-    const quantity = parseInt(this.state.itemQuantities[item.id], 10) || 1;
+  const handleAddToCart = (item) => {
+    const quantity = parseInt(itemQuantities[item.id], 10) || 1;
   
     if (isNaN(quantity) || quantity < 1) return;
   
     addToCart(item, quantity);
     console.log(`Added to cart: ${item.meal}, Quantity: ${quantity}`);
   };
-  
-  
 
-  renderMenuItems = (items) => {
-    const { visibleCount } = this.state;
-  
-    if (this.state.isLoading) {
+  const renderMenuItems = (items) => {
+    if (isLoading) {
       return <div>Loading menu items...</div>;
     }
   
-    if (this.state.error) {
-      return <div>Error: {this.state.error}</div>;
+    if (error) {
+      return <div>Error: {error}</div>;
     }
   
     if (!items || items.length === 0) {
@@ -168,66 +151,59 @@ class MenuBrowse extends Component {
           <ProductCard
             key={item.id}
             item={item}
-            quantity={this.state.itemQuantities[item.id] || 1}
-            onQuantityChange={(value) => this.updateQuantity(item.id, value)}
-            onAddToCart={() => this.handleAddToCart(item)}
+            quantity={itemQuantities[item.id] || 1}
+            onQuantityChange={(value) => updateQuantity(item.id, value)}
+            onAddToCart={() => handleAddToCart(item)}
           />
         ))}
       </div>
     );
   };
 
-  render() {
-    const { activeTab, menuItems } = this.state;
-    const menuTabs = ["desert", "dinner", "breakfast"];
+  const menuTabs = ["dessert", "dinner", "breakfast"];
 
-    return (
-      <div className="menu-browse">
-        <div className="container">
-          <h1 className="menu-browse-title">Browse our menu</h1>
+  return (
+    <div className="menu-browse">
+      <div className="container">
+        <h1 className="menu-browse-title">Browse our menu</h1>
 
-          <p className="menu-browse-description">
-            Use our menu to place an order online, or{" "}
-            <PhoneTooltip phoneNumber={this.phoneNumber}>phone</PhoneTooltip>{" "}
-            our store to place a pickup order. Fast and fresh food.
-          </p>
+        <p className="menu-browse-description">
+          Use our menu to place an order online, or{" "}
+          <PhoneTooltip phoneNumber={phoneNumber}>phone</PhoneTooltip>{" "}
+          our store to place a pickup order. Fast and fresh food.
+        </p>
 
-          <div className="menu-tabs">
-            {menuTabs.map((tab) => (
-              <Button
-                key={tab}
-                variant="tab"
-                active={activeTab === tab}
-                disabled={true}   // unclicable button!!
-              >
-                {tab.charAt(0).toUpperCase() + tab.slice(1)}
-              </Button>
-            ))}
-          </div>
+        <div className="menu-tabs">
+          {menuTabs.map((tab) => (
+            <Button
+              key={tab}
+              variant="tab"
+              active={activeTab === tab}
+              onClick={() => handleTabChange(tab)}
+            >
+              {tab.charAt(0).toUpperCase() + tab.slice(1)}
+            </Button>
+          ))}
+        </div>
 
-          <div className="tab-content">
-            {this.renderMenuItems(menuItems[activeTab])}
-          </div>
+        <div className="tab-content">
+          {renderMenuItems(menuItems[activeTab])}
+        </div>
 
-          <div className="menu-footer">
-            {menuItems[activeTab].length > this.state.visibleCount && (
-              <Button
-                variant="see-more"
-                className="see-more-btn"
-                onClick={() =>
-                  this.setState((prevState) => ({
-                    visibleCount: prevState.visibleCount + 6,
-                  }))
-                }
-              >
-                See more
-              </Button>
-            )}
-          </div>
+        <div className="menu-footer">
+          {menuItems[activeTab].length > visibleCount && (
+            <Button
+              variant="see-more"
+              className="see-more-btn"
+              onClick={() => setVisibleCount(prevCount => prevCount + 6)}
+            >
+              See more
+            </Button>
+          )}
         </div>
       </div>
-    );
-  }
-}
+    </div>
+  );
+};
 
 export default MenuBrowse;
