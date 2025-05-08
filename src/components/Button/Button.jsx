@@ -1,18 +1,24 @@
-import React, { Component } from 'react';
+import React from 'react';
 import './Button.scss';
 
 /**
  *
- * @param {string} 
- * @param {string} 
- * @param {boolean} 
- * @param {function} 
- * @param {React.ReactNode} 
- * @param {Object} 
+ * @param {string} className
+ * @param {string} variant
+ * @param {boolean} active
+ * @param {function} onClick
+ * @param {React.ReactNode} children
+ * @param {Object} rest
  */
-class Button extends Component {
-  getClassNames() {
-    const { className, variant, active } = this.props;
+const Button = ({ 
+  className = '',
+  variant = 'primary',
+  active = false,
+  onClick,
+  children,
+  ...restProps
+}) => {
+  const getClassNames = () => {
     let classes = 'btn';
     
     if (variant === 'primary') {
@@ -29,32 +35,19 @@ class Button extends Component {
     if (className) classes += ` ${className}`;
     
     return classes;
-  }
+  };
 
-  render() {
-    const { onClick, children, ...restProps } = this.props;
-    
-    const buttonProps = { ...restProps };
-    delete buttonProps.className;
-    delete buttonProps.variant;
-    delete buttonProps.active;
-
-    return (
-      <button 
-        className={this.getClassNames()}
-        onClick={onClick}
-        {...buttonProps}
-      >
-        {children}
-      </button>
-    );
-  }
-}
-
-Button.defaultProps = {
-  className: '',
-  variant: 'primary',
-  active: false
+  const buttonProps = { ...restProps };
+  
+  return (
+    <button 
+      className={getClassNames()}
+      onClick={onClick}
+      {...buttonProps}
+    >
+      {children}
+    </button>
+  );
 };
 
 export default Button;

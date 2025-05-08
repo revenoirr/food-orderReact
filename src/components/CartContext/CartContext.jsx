@@ -1,18 +1,18 @@
-import { createContext, Component } from "react";
+import { createContext, useState } from "react";
 
 const CartContext = createContext();
 
-class CartProvider extends Component {
-  state = {
+const CartProvider = ({ children }) => {
+  const [cartState, setCartState] = useState({
     cartItems: [],
     cartCount: 0,
-  };
+  });
 
-  addToCart = (item, quantity) => {
+  const addToCart = (item, quantity) => {
     const parsedQty = parseInt(quantity, 10);
     if (isNaN(parsedQty) || parsedQty < 1) return;
     
-    this.setState((prevState) => {
+    setCartState((prevState) => {
       const existingItemIndex = prevState.cartItems.findIndex(i => i.id === item.id);
       
       let updatedItems;
@@ -37,8 +37,8 @@ class CartProvider extends Component {
     });
   };
   
-  removeFromCart = (itemId) => {
-    this.setState((prevState) => {
+  const removeFromCart = (itemId) => {
+    setCartState((prevState) => {
       const itemToRemove = prevState.cartItems.find(item => item.id === itemId);
       if (!itemToRemove) return prevState;
       
@@ -49,11 +49,11 @@ class CartProvider extends Component {
     });
   };
   
-  updateQuantity = (itemId, newQuantity) => {
+  const updateQuantity = (itemId, newQuantity) => {
     const parsedQty = parseInt(newQuantity, 10);
     if (isNaN(parsedQty) || parsedQty < 0) return;
     
-    this.setState((prevState) => {
+    setCartState((prevState) => {
       const existingItemIndex = prevState.cartItems.findIndex(item => item.id === itemId);
       if (existingItemIndex === -1) return prevState;
       
@@ -80,29 +80,27 @@ class CartProvider extends Component {
     });
   };
   
-  clearCart = () => {
-    this.setState({
+  const clearCart = () => {
+    setCartState({
       cartItems: [],
       cartCount: 0
     });
   };
 
-  render() {
-    return (
-      <CartContext.Provider
-        value={{
-          cartItems: this.state.cartItems,
-          cartCount: this.state.cartCount,
-          addToCart: this.addToCart,
-          removeFromCart: this.removeFromCart,
-          updateQuantity: this.updateQuantity,
-          clearCart: this.clearCart
-        }}
-      >
-        {this.props.children}
-      </CartContext.Provider>
-    );
-  }
-}
+  return (
+    <CartContext.Provider
+      value={{
+        cartItems: cartState.cartItems,
+        cartCount: cartState.cartCount,
+        addToCart,
+        removeFromCart,
+        updateQuantity,
+        clearCart
+      }}
+    >
+      {children}
+    </CartContext.Provider>
+  );
+};
 
 export { CartContext, CartProvider };
