@@ -1,14 +1,23 @@
-import React from "react";
+import React, { useState } from "react";
 import "./../ProductCard/ProductCard.scss";
 import Button from "../Button/Button.jsx";
 
-const ProductCard = ({ item, quantity, onQuantityChange, onAddToCart }) => {
+const ProductCard = ({ item, onAddToCart }) => {
+  const [quantity, setQuantity] = useState(1);
+
   if (!item) {
-    console.error("ProductCard received null or undefined item");
-    return null;
+    return null; 
   }
 
-  console.log("Rendering ProductCard for:", item);
+  const handleQuantityChange = (value) => {
+    if (typeof value === 'number') {
+      setQuantity(value);
+    }
+  };
+
+  const handleAddToCart = () => {
+    onAddToCart(item, quantity);
+  };
 
   return (
     <div className="menu-item">
@@ -46,21 +55,19 @@ const ProductCard = ({ item, quantity, onQuantityChange, onAddToCart }) => {
               const value = e.target.value;
               if (/^\d+$/.test(value)) {
                 const num = Math.min(99, Math.max(1, Number(value)));
-                onQuantityChange(num);
-              } else if (value === "") {
-                onQuantityChange("");
+                handleQuantityChange(num);
               }
             }}
             onBlur={(e) => {
               if (e.target.value === "" || Number(e.target.value) < 1) {
-                onQuantityChange(item.id, 1);
+                handleQuantityChange(1);
               }
             }}
           />
 
           <Button
             variant="primary"
-            onClick={() => onAddToCart(item)}
+            onClick={handleAddToCart}
             className="add-to-cart-btn"
           >
             Add to cart

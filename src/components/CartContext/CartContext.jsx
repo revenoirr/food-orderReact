@@ -10,7 +10,10 @@ const CartProvider = ({ children }) => {
 
   const addToCart = (item, quantity) => {
     const parsedQty = parseInt(quantity, 10);
-    if (isNaN(parsedQty) || parsedQty < 1) return;
+    if (isNaN(parsedQty) || parsedQty < 1) {
+      console.error("Invalid quantity provided to addToCart:", quantity);
+      return;
+    }
     
     setCartState((prevState) => {
       const existingItemIndex = prevState.cartItems.findIndex(i => i.id === item.id);
@@ -51,7 +54,10 @@ const CartProvider = ({ children }) => {
   
   const updateQuantity = (itemId, newQuantity) => {
     const parsedQty = parseInt(newQuantity, 10);
-    if (isNaN(parsedQty) || parsedQty < 0) return;
+    if (isNaN(parsedQty) || parsedQty < 0) {
+      console.error("Invalid quantity provided to updateQuantity:", newQuantity);
+      return;
+    }
     
     setCartState((prevState) => {
       const existingItemIndex = prevState.cartItems.findIndex(item => item.id === itemId);

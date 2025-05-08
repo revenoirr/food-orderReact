@@ -1,16 +1,17 @@
-import React, { useState, useEffect, useContext } from "react";
-import "./../MenuBrowse/MenuBrowse.scss";
+import React, { useState, useEffect, useContext, useRef, useCallback } from "react";
+import "./MenuBrowse.scss";
 import PhoneTooltip from "../phoneTooltip/phoneToolTip.jsx";
 import ProductCard from "../ProductCard/ProductCard.jsx";
 import Button from "../Button/Button.jsx";
-import { getMeals } from "../../services/api.jsx";
+import { useApi } from "../../services/api.jsx";
 import { CartContext } from "../CartContext/CartContext.jsx";
+
+const initialVisibleCount = 6;
+const incrementCount = 6;
 
 const MenuBrowse = () => {
   const { addToCart } = useContext(CartContext);
-  
   const [activeTab, setActiveTab] = useState("dessert");
-  const [itemQuantities, setItemQuantities] = useState({});
   const [menuItems, setMenuItems] = useState({
     dessert: [],
     dinner: [],
@@ -18,39 +19,35 @@ const MenuBrowse = () => {
   });
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [visibleCount, setVisibleCount] = useState(6);
+  const [visibleCount, setVisibleCount] = useState(initialVisibleCount);
   
   const phoneNumber = "555-123-4567";
-  const hasFetchedMealsRef = React.useRef(false);
+  const hasFetchedMealsRef = useRef(false);
+  
+  const { getMeals, loading, error: apiError } = useApi();
 
-  useEffect(() => {
-    if (!hasFetchedMealsRef.current) {
-      fetchMeals();
-      hasFetchedMealsRef.current = true;
-    }
-  }, []);
-
-  const fetchMeals = async () => {
+  const fetchMeals = useCallback(async () => {
     try {
       console.log("Fetching meals from API...");
+      
       const meals = await getMeals();
       console.log("API response:", meals);
 
-      const categoryMapping = {
-        Dessert: "dessert",
-        Dinner: "dinner",
-        Breakfast: "breakfast",
-      };
+      const apiCategories = [...new Set(meals.map(meal => meal.category))];
+      
+      const categoryMapping = {};
+      apiCategories.forEach(category => {
+        categoryMapping[category] = category.toLowerCase();
+      });
 
-      const categorizedMeals = {
-        dessert: [],
-        dinner: [],
-        breakfast: [],
-      };
+      const categorizedMeals = {};
+      Object.values(categoryMapping).forEach(category => {
+        categorizedMeals[category] = [];
+      });
 
       meals.forEach((meal) => {
         const apiCategory = meal.category;
-        const appCategory = categoryMapping[apiCategory] || "dessert";
+        const appCategory = categoryMapping[apiCategory];
 
         if (categorizedMeals[appCategory]) {
           categorizedMeals[appCategory].push(meal);
@@ -58,76 +55,36 @@ const MenuBrowse = () => {
       });
 
       console.log("Categorized meals:", categorizedMeals);
-
       setMenuItems(categorizedMeals);
-      setIsLoading(false);
     } catch (error) {
       console.error("Error fetching meals:", error);
-
-      const fallbackMeals = [
-        {
-          id: "1",
-          meal: "Bakewell tart",
-          category: "Dessert",
-          area: "British",
-          instructions: "Sample dessert instructions",
-          img:
-            "https://www.themealdb.com/images/media/meals/wyrqqq1468233628.jpg",
-          price: 7.22,
-        },
-        {
-          id: "2",
-          meal: "Beef Wellington",
-          category: "Dinner",
-          area: "British",
-          instructions: "Sample dinner instructions",
-          img:
-            "https://www.themealdb.com/images/media/meals/vvpprx1487325699.jpg",
-          price: 15.99,
-        },
-        {
-          id: "3",
-          meal: "Pancakes",
-          category: "Breakfast",
-          area: "American",
-          instructions: "Sample breakfast instructions",
-          img:
-            "https://www.themealdb.com/images/media/meals/sbx7n71587673021.jpg",
-          price: 8.5,
-        },
-      ];
-
-      const categorizedMeals = {
-        dessert: fallbackMeals.filter((meal) => meal.category === "Dessert"),
-        dinner: fallbackMeals.filter((meal) => meal.category === "Dinner"),
-        breakfast: fallbackMeals.filter((meal) => meal.category === "Breakfast"),
-      };
-
-      console.log("Using fallback meals:", categorizedMeals);
-
-      setMenuItems(categorizedMeals);
-      setIsLoading(false);
-      setError(`${error.message} (Using sample data instead)`);
+      setError(`Error fetching menu data: ${error.message}`);
     }
-  };
+  }, [getMeals]); 
+  
+  useEffect(() => {
+    if (!hasFetchedMealsRef.current) {
+      fetchMeals();
+      hasFetchedMealsRef.current = true;
+    }
+  }, [fetchMeals]); 
+  
+  useEffect(() => {
+    if (apiError) {
+      setError(apiError);
+    }
+  }, [apiError]);
+  
+  useEffect(() => {
+    setIsLoading(loading);
+  }, [loading]);
 
   const handleTabChange = (tab) => {
     setActiveTab(tab);
-    setVisibleCount(6);
+    setVisibleCount(initialVisibleCount);
   };
 
-  const updateQuantity = (itemId, value) => {
-    setItemQuantities(prevQuantities => ({
-      ...prevQuantities,
-      [itemId]: value,
-    }));
-  };
-
-  const handleAddToCart = (item) => {
-    const quantity = parseInt(itemQuantities[item.id], 10) || 1;
-  
-    if (isNaN(quantity) || quantity < 1) return;
-  
+  const handleAddToCart = (item, quantity) => {
     addToCart(item, quantity);
     console.log(`Added to cart: ${item.meal}, Quantity: ${quantity}`);
   };
@@ -151,16 +108,14 @@ const MenuBrowse = () => {
           <ProductCard
             key={item.id}
             item={item}
-            quantity={itemQuantities[item.id] || 1}
-            onQuantityChange={(value) => updateQuantity(item.id, value)}
-            onAddToCart={() => handleAddToCart(item)}
+            onAddToCart={handleAddToCart}
           />
         ))}
       </div>
     );
   };
 
-  const menuTabs = ["dessert", "dinner", "breakfast"];
+  const menuTabs = menuItems ? Object.keys(menuItems) : [];
 
   return (
     <div className="menu-browse">
@@ -191,11 +146,10 @@ const MenuBrowse = () => {
         </div>
 
         <div className="menu-footer">
-          {menuItems[activeTab].length > visibleCount && (
+          {menuItems[activeTab] && menuItems[activeTab].length > visibleCount && (
             <Button
               variant="see-more"
-              className="see-more-btn"
-              onClick={() => setVisibleCount(prevCount => prevCount + 6)}
+              onClick={() => setVisibleCount(prevCount => prevCount + incrementCount)}
             >
               See more
             </Button>
