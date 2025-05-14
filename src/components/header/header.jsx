@@ -1,11 +1,23 @@
 import React, { useContext } from "react";
-import "./../header/header.scss";
+import { Link } from "react-router-dom";
+import "./header.scss";
 import logo from "../../assets/logo.svg";
 import cartIcon from "../../assets/cart1.svg";
 import { CartContext } from "../CartContext/CartContext.jsx";
+import useAuth from "../../hooks/useAuth";
+
 
 const Header = () => {
   const { cartCount } = useContext(CartContext);
+  const { currentUser, logout } = useAuth();
+
+  const handleLogout = async () => {
+    try {
+      await logout();
+    } catch (error) {
+      console.error("Failed to log out", error);
+    }
+  };
 
   return (
     <header className="header">
@@ -15,10 +27,21 @@ const Header = () => {
         </div>
 
         <nav className="nav">
-          <a href="/" className="active">Home</a>
-          <a href="/menu">Menu</a>
-          <a href="/company">Company</a>
-          <a href="/login">Login</a>
+          <Link to="/" className={location.pathname === "/" ? "active" : ""}>Home</Link>
+          
+          <Link to="/menu" className={location.pathname === "/menu" ? "active" : ""}>Menu</Link>
+          
+          <Link to="/company" className={location.pathname === "/company" ? "active" : ""}>Company</Link>
+          
+          {currentUser ? (
+            <a href="#" onClick={handleLogout} className="logout-link">Logout</a>
+          ) : (
+            <Link to="/login" className={location.pathname === "/login" ? "active" : ""}>Login</Link>
+          )}
+          
+          {currentUser && (
+            <span className="user-email">{currentUser.email}</span>
+          )}
         </nav>
 
         <div className="cart">
