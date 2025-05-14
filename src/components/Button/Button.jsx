@@ -2,13 +2,13 @@ import React from 'react';
 import './Button.scss';
 
 /**
- *
- * @param {string} className
- * @param {string} variant
- * @param {boolean} active
- * @param {function} onClick
- * @param {React.ReactNode} children
- * @param {Object} rest
+ * Button component with various styles
+ * 
+ * @param {string} className - Additional CSS class names
+ * @param {string} variant - Button style variant ('primary', 'tab', 'outlined', 'see-more', 'small')
+ * @param {boolean} active - Whether the button is in active state (for tabs)
+ * @param {function} onClick - Click handler function
+ * @param {React.ReactNode} children - Button content
  */
 const Button = ({ 
   className = '',
@@ -18,32 +18,38 @@ const Button = ({
   children,
   ...restProps
 }) => {
+  const variantClasses = {
+    primary: 'btn-primary',
+    tab: 'menu-tab',
+    outlined: 'btn-outlined',
+    'see-more': 'see-more-btn',
+    small: 'btn-small',
+    secondary: 'btn-secondary'
+  };
+  
   const getClassNames = () => {
-    let classes = 'btn';
+    const classes = ['btn'];
     
-    if (variant === 'primary') {
-      classes += ' btn-primary';
-    } else if (variant === 'tab') {
-      classes += ' menu-tab';
-      if (active) classes += ' active';
-    } else if (variant === 'outlined') {
-      classes += ' btn-outlined';
-    } else if (variant === 'see-more') {
-      classes += ' see-more-btn';
+    if (variantClasses[variant]) {
+      classes.push(variantClasses[variant]);
     }
     
-    if (className) classes += ` ${className}`;
-    
-    return classes;
-  };
+    if (variant === 'tab' && active) {
+      classes.push('active');
+    }
 
-  const buttonProps = { ...restProps };
+    if (className) {
+      classes.push(className);
+    }
+    
+    return classes.join(' ');
+  };
   
   return (
     <button 
       className={getClassNames()}
       onClick={onClick}
-      {...buttonProps}
+      {...restProps}
     >
       {children}
     </button>

@@ -7,48 +7,48 @@ $white: #ffffff;
   padding: 60px 0;
   text-align: center;
   background-color: var(--secondary-color);
-  
+
   .container {
     max-width: 1200px;
     margin: 0 auto;
     padding: 0 20px;
   }
-  
+
   .menu-browse-title {
     font-size: 36px;
     font-weight: 600;
     color: var(--primary-color);
     margin-bottom: 16px;
   }
-  
+
   .menu-browse-description {
     font-size: 16px;
     max-width: 600px;
     margin: 0 auto 40px;
     color: var(--text-color);
-    
+
     .phone-link {
       color: var(--primary-color);
       cursor: pointer;
       font-weight: 500;
-      
+
       &:hover {
         text-decoration: underline;
       }
     }
   }
-  
+
   .menu-tabs {
     display: flex;
     justify-content: center;
     gap: 16px;
     margin-bottom: 40px;
-    
+
     @media (max-width: 576px) {
       flex-direction: column;
       align-items: center;
     }
-    
+
     .menu-tab {
       padding: 12px 40px;
       background-color: $white;
@@ -56,32 +56,32 @@ $white: #ffffff;
       border-radius: 6px;
       font-size: 16px;
       font-weight: 500;
-      
+
       &:hover {
         background-color: color.adjust($white, $lightness: -5%);
       }
-      
+
       &.active {
         background-color: var(--primary-color, #{$primary-color-fallback});
         color: $white;
       }
     }
   }
-  
+
   .menu-items-grid {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
     gap: 30px;
     margin-bottom: 40px;
-    
+
     @media (max-width: 768px) {
       grid-template-columns: 1fr;
     }
   }
-  
+
   .menu-footer {
     margin-top: 20px;
-    
+
     .see-more-btn {
       background-color: var(--primary-color, #{$primary-color-fallback});
       color: $white;
@@ -90,7 +90,7 @@ $white: #ffffff;
       padding: 12px 24px;
       font-size: 16px;
       font-weight: 500;
-      
+
       &:hover {
         background-color: color.adjust($primary-color-fallback, $lightness: -5%);
         filter: brightness(0.95);
