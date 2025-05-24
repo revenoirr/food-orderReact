@@ -1,7 +1,12 @@
 import React from 'react';
 import './../PhoneToolTip/PhoneTooltip.scss';
 
-const PhoneTooltip = ({ phoneNumber, children }) => {
+interface PhoneTooltipProps {
+  phoneNumber: string;
+  children: React.ReactNode;
+}
+
+const PhoneTooltip: React.FC<PhoneTooltipProps> = ({ phoneNumber, children }) => {
   return (
     <span className="phone-tooltip-wrapper">
       {children}

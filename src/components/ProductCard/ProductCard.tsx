@@ -1,21 +1,38 @@
-import React, { useState } from "react";
+import React, { useState, ChangeEvent } from "react";
 import "./../ProductCard/ProductCard.scss";
-import Button from "../Button/Button.jsx";
+import Button from "../Button/Button";
 
-const ProductCard = ({ item, onAddToCart }) => {
-  const [quantity, setQuantity] = useState(1);
+// Define the interface for the menu item
+export interface Item {
+  id?: string | number;
+  meal: string;
+  price: number;
+  category?: string;  // Added to match Meal type in MenuBrowse
+  img?: string;
+  instructions?: string;
+  // Add other properties that might be in the item object
+}
+
+// Define the props interface for the ProductCard component
+export interface ProductCardProps {
+  item: Item;
+  onAddToCart: (item: Item, quantity: number) => void;
+}
+
+const ProductCard: React.FC<ProductCardProps> = ({ item, onAddToCart }) => {
+  const [quantity, setQuantity] = useState<number>(1);
 
   if (!item) {
     return null; 
   }
 
-  const handleQuantityChange = (value) => {
+  const handleQuantityChange = (value: number): void => {
     if (typeof value === 'number') {
       setQuantity(value);
     }
   };
 
-  const handleAddToCart = () => {
+  const handleAddToCart = (): void => {
     onAddToCart(item, quantity);
   };
 
@@ -51,14 +68,14 @@ const ProductCard = ({ item, onAddToCart }) => {
             min="1"
             max="99"
             value={quantity}
-            onChange={(e) => {
+            onChange={(e: ChangeEvent<HTMLInputElement>) => {
               const value = e.target.value;
               if (/^\d+$/.test(value)) {
                 const num = Math.min(99, Math.max(1, Number(value)));
                 handleQuantityChange(num);
               }
             }}
-            onBlur={(e) => {
+            onBlur={(e: ChangeEvent<HTMLInputElement>) => {
               if (e.target.value === "" || Number(e.target.value) < 1) {
                 handleQuantityChange(1);
               }

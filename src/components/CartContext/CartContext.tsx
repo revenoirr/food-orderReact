@@ -1,15 +1,39 @@
-import { createContext, useState } from "react";
+import React, { createContext, useState, ReactNode } from "react";
 
-const CartContext = createContext();
+interface CartItem {
+  id: string | number;
+  quantity: number;
+  [key: string]: any; 
+}
 
-const CartProvider = ({ children }) => {
-  const [cartState, setCartState] = useState({
+interface CartState {
+  cartItems: CartItem[];
+  cartCount: number;
+}
+
+interface CartContextType {
+  cartItems: CartItem[];
+  cartCount: number;
+  addToCart: (item: CartItem, quantity: number | string) => void;
+  removeFromCart: (itemId: string | number) => void;
+  updateQuantity: (itemId: string | number, newQuantity: number | string) => void;
+  clearCart: () => void;
+}
+
+const CartContext = createContext<CartContextType | undefined>(undefined);
+
+interface CartProviderProps {
+  children: ReactNode;
+}
+
+const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
+  const [cartState, setCartState] = useState<CartState>({
     cartItems: [],
     cartCount: 0,
   });
 
-  const addToCart = (item, quantity) => {
-    const parsedQty = parseInt(quantity, 10);
+  const addToCart = (item: CartItem, quantity: number | string) => {
+    const parsedQty = parseInt(quantity.toString(), 10);
     if (isNaN(parsedQty) || parsedQty < 1) {
       console.error("Invalid quantity provided to addToCart:", quantity);
       return;
@@ -40,7 +64,7 @@ const CartProvider = ({ children }) => {
     });
   };
   
-  const removeFromCart = (itemId) => {
+  const removeFromCart = (itemId: string | number) => {
     setCartState((prevState) => {
       const itemToRemove = prevState.cartItems.find(item => item.id === itemId);
       if (!itemToRemove) return prevState;
@@ -52,8 +76,8 @@ const CartProvider = ({ children }) => {
     });
   };
   
-  const updateQuantity = (itemId, newQuantity) => {
-    const parsedQty = parseInt(newQuantity, 10);
+  const updateQuantity = (itemId: string | number, newQuantity: number | string) => {
+    const parsedQty = parseInt(newQuantity.toString(), 10);
     if (isNaN(parsedQty) || parsedQty < 0) {
       console.error("Invalid quantity provided to updateQuantity:", newQuantity);
       return;
@@ -109,4 +133,13 @@ const CartProvider = ({ children }) => {
   );
 };
 
-export { CartContext, CartProvider };
+const useCart = (): CartContextType => {
+  const context = React.useContext(CartContext);
+  if (context === undefined) {
+    throw new Error('useCart must be used within a CartProvider');
+  }
+  return context;
+};
+
+export { CartContext, CartProvider, useCart };
+export type { CartItem, CartContextType };

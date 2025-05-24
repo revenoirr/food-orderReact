@@ -2,15 +2,12 @@ import React, { ButtonHTMLAttributes } from 'react';
 import './Button.scss';
 
 interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
-  /** Additional CSS class names */
   className?: string;
-  /** Button style variant */
   variant?: 'primary' | 'tab' | 'outlined' | 'see-more' | 'small' | 'secondary';
-  /** Whether the button is in active state (for tabs) */
   active?: boolean;
-  /** Button content */
   children: React.ReactNode;
 }
+
 
 const Button: React.FC<ButtonProps> = ({ 
   className = '',
