@@ -1,10 +1,11 @@
-import { useState, useCallback } from 'react';
+import { useState } from 'react';
 
 const useFetch = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [data, setData] = useState(null);
 
-  const logApiCall = useCallback((url, payload, status, method) => {
+  const logApiCall = (url, payload, status, method) => {
     try {
       const existingLogs = JSON.parse(localStorage.getItem('apiLogs')) || [];
       const newLog = {
@@ -21,123 +22,66 @@ const useFetch = () => {
     } catch (err) {
       console.error('Error logging API call to local storage:', err);
     }
-  }, []);
+  };
 
-  const get = useCallback(async (url, options = {}) => {
+  const request = async (url, options = {}) => {
+    const { method = 'GET', payload = null, ...restOptions } = options;
+    
     setLoading(true);
     setError(null);
+    
     try {
-      const response = await fetch(url, {
-        method: 'GET',
+      const fetchOptions = {
+        method,
         headers: {
           'Content-Type': 'application/json',
-          ...options.headers
+          ...restOptions.headers
         },
-        ...options
-      });
-      const data = await response.json();
-      logApiCall(url, null, response.status, 'GET');
+        ...restOptions
+      };
+      
+      if (['POST', 'PUT', 'PATCH'].includes(method) && payload) {
+        fetchOptions.body = JSON.stringify(payload);
+      }
+      
+      const response = await fetch(url, fetchOptions);
+      const responseData = await response.json();
+      
+      logApiCall(url, payload, response.status, method);
       setLoading(false);
-      return { data, status: response.status };
+      setData(responseData);
+      
+      return { data: responseData, status: response.status };
     } catch (err) {
       setError(err.message);
       setLoading(false);
-      logApiCall(url, null, 0, 'GET');
+      logApiCall(url, payload, 0, method);
       throw err;
     }
-  }, [logApiCall]);
+  };
 
-  const post = useCallback(async (url, payload, options = {}) => {
-    setLoading(true);
-    setError(null);
-    try {
-      const response = await fetch(url, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          ...options.headers
-        },
-        body: JSON.stringify(payload),
-        ...options
-      });
-      const data = await response.json();
-      logApiCall(url, payload, response.status, 'POST');
-      setLoading(false);
-      return { data, status: response.status };
-    } catch (err) {
-      setError(err.message);
-      setLoading(false);
-      logApiCall(url, payload, 0, 'POST');
-      throw err;
-    }
-  }, [logApiCall]);
+  const get = (url, options = {}) => request(url, { ...options, method: 'GET' });
+  const post = (url, payload, options = {}) => request(url, { ...options, method: 'POST', payload });
+  const put = (url, payload, options = {}) => request(url, { ...options, method: 'PUT', payload });
+  const del = (url, options = {}) => request(url, { ...options, method: 'DELETE' });
 
-  const put = useCallback(async (url, payload, options = {}) => {
-    setLoading(true);
-    setError(null);
-    try {
-      const response = await fetch(url, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          ...options.headers
-        },
-        body: JSON.stringify(payload),
-        ...options
-      });
-      const data = await response.json();
-      logApiCall(url, payload, response.status, 'PUT');
-      setLoading(false);
-      return { data, status: response.status };
-    } catch (err) {
-      setError(err.message);
-      setLoading(false);
-      logApiCall(url, payload, 0, 'PUT');
-      throw err;
-    }
-  }, [logApiCall]);
-
-  const del = useCallback(async (url, options = {}) => {
-    setLoading(true);
-    setError(null);
-    try {
-      const response = await fetch(url, {
-        method: 'DELETE',
-        headers: {
-          'Content-Type': 'application/json',
-          ...options.headers
-        },
-        ...options
-      });
-      const data = await response.json();
-      logApiCall(url, null, response.status, 'DELETE');
-      setLoading(false);
-      return { data, status: response.status };
-    } catch (err) {
-      setError(err.message);
-      setLoading(false);
-      logApiCall(url, null, 0, 'DELETE');
-      throw err;
-    }
-  }, [logApiCall]);
-
-  const getApiLogs = useCallback(() => {
+  const getApiLogs = () => {
     try {
       return JSON.parse(localStorage.getItem('apiLogs')) || [];
     } catch (err) {
       console.error('Error retrieving API logs from local storage:', err);
       return [];
     }
-  }, []);
+  };
 
-  const clearApiLogs = useCallback(() => {
+  const clearApiLogs = () => {
     try {
       localStorage.removeItem('apiLogs');
       console.log('API logs cleared from local storage');
     } catch (err) {
       console.error('Error clearing API logs from local storage:', err);
     }
-  }, []);
+  };
 
   return {
     get,
@@ -146,6 +90,7 @@ const useFetch = () => {
     delete: del,
     loading,
     error,
+    data,
     getApiLogs,
     clearApiLogs
   };
