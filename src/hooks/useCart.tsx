@@ -11,7 +11,6 @@ interface CartContextType {
   clearCart: () => void;
 }
 
-// Drop-in replacement for your existing useCart hook
 export const useCart = (): CartContextType => {
   const dispatch = useAppDispatch();
   const { cartItems, cartCount } = useAppSelector(state => state.cart);

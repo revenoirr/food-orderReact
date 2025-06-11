@@ -4,7 +4,6 @@ import { addToCart } from "../../slices/cartSlice";
 import "./../ProductCard/ProductCard.scss";
 import Button from "../Button/Button";
 
-// Define the interface for the menu item
 export interface Item {
   id?: string | number;
   meal: string;
@@ -12,10 +11,8 @@ export interface Item {
   category?: string;
   img?: string;
   instructions?: string;
-  // Add other properties that might be in the item object
 }
 
-// Simplified props interface - no longer need onAddToCart callback
 export interface ProductCardProps {
   item: Item;
 }
@@ -35,20 +32,17 @@ const ProductCard: React.FC<ProductCardProps> = ({ item }) => {
   };
 
   const handleAddToCart = (): void => {
-    // Dispatch the addToCart action directly
     dispatch(addToCart({ 
       item: {
-        id: item.id || `${item.meal}-${Date.now()}`, // Ensure we have an ID
-        quantity: 0, // This will be set by the action
-        ...item // Spread all item properties
+        id: item.id || `${item.meal}-${Date.now()}`, 
+        quantity: 0, 
+        ...item 
       }, 
       quantity 
     }));
     
-    // Optional: Reset quantity to 1 after adding to cart
     setQuantity(1);
     
-    // Optional: Show success message or feedback
     console.log(`Added ${quantity} ${item.meal}(s) to cart`);
   };
 

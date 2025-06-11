@@ -3,7 +3,7 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 interface CartItem {
   id: string | number;
   quantity: number;
-  [key: string]: any; // Matches your existing flexible structure
+  [key: string]: any; 
 }
 
 interface CartState {
@@ -32,11 +32,9 @@ const cartSlice = createSlice({
       const existingItemIndex = state.cartItems.findIndex(i => i.id === item.id);
       
       if (existingItemIndex >= 0) {
-        // Update existing item
         state.cartItems[existingItemIndex].quantity += parsedQty;
         state.cartCount += parsedQty;
       } else {
-        // Add new item
         state.cartItems.push({ ...item, quantity: parsedQty });
         state.cartCount += parsedQty;
       }
@@ -68,11 +66,9 @@ const cartSlice = createSlice({
       const quantityDifference = parsedQty - item.quantity;
       
       if (parsedQty === 0) {
-        // Remove item if quantity is 0
         state.cartItems = state.cartItems.filter(item => item.id !== itemId);
         state.cartCount -= item.quantity;
       } else {
-        // Update quantity
         state.cartItems[existingItemIndex].quantity = parsedQty;
         state.cartCount += quantityDifference;
       }

@@ -1,4 +1,3 @@
-// fetchSlice.ts
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 interface FetchOptions {
@@ -58,7 +57,6 @@ const fetchSlice = createSlice({
         timeLogged: new Date().toLocaleString()
       };
       
-      // Keep only the last 100 logs
       state.apiLogs = [...state.apiLogs, newLog].slice(-100);
     },
     

@@ -1,5 +1,3 @@
-// components/AuthProvider/AuthProvider.tsx
-
 import React, { useEffect, ReactNode } from "react";
 import { onAuthStateChanged } from "firebase/auth";
 import { auth } from "../../firebase";
@@ -22,9 +20,8 @@ const AuthProvider = ({ children }: AuthProviderProps) => {
     return unsubscribe;
   }, [dispatch]);
 
-  // Show loading state while auth is initializing
   if (loading) {
-    return <div>Loading...</div>; // or your loading component
+    return <div>Loading...</div>; 
   }
 
   return <>{children}</>;

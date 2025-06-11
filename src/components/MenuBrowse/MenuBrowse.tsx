@@ -4,7 +4,6 @@ import PhoneTooltip from "../PhoneTooltip/phoneToolTip.tsx";
 import ProductCard, { Item } from "../ProductCard/ProductCard.tsx";
 import Button from "../Button/Button.tsx";
 import { useApi } from "../../services/api.tsx";
-import { useCart, CartItem } from "../../hooks/useCart";
 
 interface Meal {
   id: string | number;
@@ -34,9 +33,6 @@ const initialVisibleCount = 6;
 const incrementCount = 6;
 
 const MenuBrowse: React.FC = () => {
-  // Use the Redux-based useCart hook instead of useContext
-  const { addToCart } = useCart();
-  
   const [activeTab, setActiveTab] = useState<string>("dessert");
   const [menuItems, setMenuItems] = useState<MenuItems>({
     dessert: [],
@@ -110,19 +106,6 @@ const MenuBrowse: React.FC = () => {
     setVisibleCount(initialVisibleCount);
   };
 
-  const handleAddToCart = (item: Item, quantity: number): void => {
-    const itemId = item.id !== undefined ? item.id : `temp-${Date.now()}`;
-    
-    const cartItem: CartItem = {
-      ...item,
-      id: itemId,
-      quantity: quantity
-    };
-    
-    addToCart(cartItem, quantity);
-    console.log(`Added to cart: ${item.meal}, Quantity: ${quantity}`);
-  };
-
   const renderMenuItems = (items: Meal[] | undefined): React.ReactNode => {
     if (isLoading) {
       return <div>Loading menu items...</div>;
@@ -142,7 +125,6 @@ const MenuBrowse: React.FC = () => {
           <ProductCard
             key={item.id}
             item={item as Item}
-            onAddToCart={handleAddToCart}
           />
         ))}
       </div>

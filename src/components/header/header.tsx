@@ -19,7 +19,6 @@ interface UseAuthReturn {
 }
 
 const Header: React.FC = () => {
-  // Use your custom useCart hook instead of useContext
   const { cartCount } = useCart();
   
   const auth = useAuth();

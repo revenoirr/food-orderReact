@@ -1,9 +1,7 @@
-// useFetch.ts
 import { useDispatch, useSelector } from 'react-redux';
 import { setLoading, setError, setData, addApiLog, clearApiLogs, resetFetchState } from '../slices/fetchslice';
 import type { FetchOptions, ApiLog } from '../slices/fetchslice';
 
-// You'll need to replace this with your actual RootState type
 interface RootState {
   fetch: {
     loading: boolean;
@@ -11,7 +9,6 @@ interface RootState {
     data: any | null;
     apiLogs: ApiLog[];
   };
-  // ... other slices
 }
 
 interface FetchResponse<T> {
@@ -110,7 +107,6 @@ const useFetch = () => {
     getApiLogs,
     clearApiLogs: clearLogs,
     resetFetchState: resetState,
-    // Additional Redux-specific methods
     apiLogs
   };
 };
