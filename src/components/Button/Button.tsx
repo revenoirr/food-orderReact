@@ -1,16 +1,15 @@
-import React from 'react';
+import React, { ButtonHTMLAttributes } from 'react';
 import './Button.scss';
 
-/**
- * Button component with various styles
- * 
- * @param {string} className - Additional CSS class names
- * @param {string} variant - Button style variant ('primary', 'tab', 'outlined', 'see-more', 'small')
- * @param {boolean} active - Whether the button is in active state (for tabs)
- * @param {function} onClick - Click handler function
- * @param {React.ReactNode} children - Button content
- */
-const Button = ({ 
+interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
+  className?: string;
+  variant?: 'primary' | 'tab' | 'outlined' | 'see-more' | 'small' | 'secondary';
+  active?: boolean;
+  children: React.ReactNode;
+}
+
+
+const Button: React.FC<ButtonProps> = ({ 
   className = '',
   variant = 'primary',
   active = false,
@@ -18,7 +17,7 @@ const Button = ({
   children,
   ...restProps
 }) => {
-  const variantClasses = {
+  const variantClasses: Record<string, string> = {
     primary: 'btn-primary',
     tab: 'menu-tab',
     outlined: 'btn-outlined',
@@ -27,8 +26,8 @@ const Button = ({
     secondary: 'btn-secondary'
   };
   
-  const getClassNames = () => {
-    const classes = ['btn'];
+  const getClassNames = (): string => {
+    const classes: string[] = ['btn'];
     
     if (variantClasses[variant]) {
       classes.push(variantClasses[variant]);

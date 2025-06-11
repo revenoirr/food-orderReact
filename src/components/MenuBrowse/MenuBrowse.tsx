@@ -1,46 +1,76 @@
 import React, { useState, useEffect, useContext, useRef, useCallback } from "react";
 import "./MenuBrowse.scss";
-import PhoneTooltip from "../phoneTooltip/phoneToolTip.jsx";
-import ProductCard from "../ProductCard/ProductCard.jsx";
-import Button from "../Button/Button.jsx";
-import { useApi } from "../../services/api.jsx";
-import { CartContext } from "../CartContext/CartContext.jsx";
+import PhoneTooltip from "../PhoneTooltip/phoneToolTip.tsx";
+import ProductCard, { Item } from "../ProductCard/ProductCard.tsx";
+import Button from "../Button/Button.tsx";
+import { useApi } from "../../services/api.tsx";
+import { CartContext, CartContextType, CartItem } from "../CartContext/CartContext.tsx";
+
+interface Meal {
+  id: string | number;
+  meal: string;
+  price: number;
+  category: string;
+  quantity?: number;  
+  img?: string;
+  instructions?: string;
+}
+
+interface CategoryMapping {
+  [key: string]: string;
+}
+
+interface MenuItems {
+  [category: string]: Meal[];
+}
+
+interface ApiHookResult {
+  getMeals: () => Promise<Meal[]>;
+  loading: boolean;
+  error: string | null;
+}
 
 const initialVisibleCount = 6;
 const incrementCount = 6;
 
-const MenuBrowse = () => {
-  const { addToCart } = useContext(CartContext);
-  const [activeTab, setActiveTab] = useState("dessert");
-  const [menuItems, setMenuItems] = useState({
+const MenuBrowse: React.FC = () => {
+  const cartContext = useContext(CartContext);
+  
+  if (!cartContext) {
+    throw new Error("MenuBrowse must be used within a CartProvider");
+  }
+  
+  const { addToCart } = cartContext;
+  const [activeTab, setActiveTab] = useState<string>("dessert");
+  const [menuItems, setMenuItems] = useState<MenuItems>({
     dessert: [],
     dinner: [],
     breakfast: [],
   });
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [visibleCount, setVisibleCount] = useState(initialVisibleCount);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
+  const [visibleCount, setVisibleCount] = useState<number>(initialVisibleCount);
   
   const phoneNumber = "555-123-4567";
-  const hasFetchedMealsRef = useRef(false);
+  const hasFetchedMealsRef = useRef<boolean>(false);
   
-  const { getMeals, loading, error: apiError } = useApi();
+  const { getMeals, loading, error: apiError } = useApi() as ApiHookResult;
 
-  const fetchMeals = useCallback(async () => {
+  const fetchMeals = useCallback(async (): Promise<void> => {
     try {
       console.log("Fetching meals from API...");
       
       const meals = await getMeals();
       console.log("API response:", meals);
 
-      const apiCategories = [...new Set(meals.map(meal => meal.category))];
+      const apiCategories = Array.from(new Set(meals.map(meal => meal.category)));
       
-      const categoryMapping = {};
+      const categoryMapping: CategoryMapping = {};
       apiCategories.forEach(category => {
         categoryMapping[category] = category.toLowerCase();
       });
 
-      const categorizedMeals = {};
+      const categorizedMeals: MenuItems = {};
       Object.values(categoryMapping).forEach(category => {
         categorizedMeals[category] = [];
       });
@@ -58,7 +88,7 @@ const MenuBrowse = () => {
       setMenuItems(categorizedMeals);
     } catch (error) {
       console.error("Error fetching meals:", error);
-      setError(`Error fetching menu data: ${error.message}`);
+      setError(`Error fetching menu data: ${(error as Error).message}`);
     }
   }, [getMeals]); 
   
@@ -79,17 +109,25 @@ const MenuBrowse = () => {
     setIsLoading(loading);
   }, [loading]);
 
-  const handleTabChange = (tab) => {
+  const handleTabChange = (tab: string): void => {
     setActiveTab(tab);
     setVisibleCount(initialVisibleCount);
   };
 
-  const handleAddToCart = (item, quantity) => {
-    addToCart(item, quantity);
+  const handleAddToCart = (item: Item, quantity: number): void => {
+    const itemId = item.id !== undefined ? item.id : `temp-${Date.now()}`;
+    
+    const cartItem: CartItem = {
+      ...item,
+      id: itemId,
+      quantity: quantity
+    };
+    
+    addToCart(cartItem, quantity);
     console.log(`Added to cart: ${item.meal}, Quantity: ${quantity}`);
   };
 
-  const renderMenuItems = (items) => {
+  const renderMenuItems = (items: Meal[] | undefined): React.ReactNode => {
     if (isLoading) {
       return <div>Loading menu items...</div>;
     }
@@ -107,7 +145,7 @@ const MenuBrowse = () => {
         {items.slice(0, visibleCount).map((item) => (
           <ProductCard
             key={item.id}
-            item={item}
+            item={item as Item}
             onAddToCart={handleAddToCart}
           />
         ))}

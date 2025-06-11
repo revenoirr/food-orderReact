@@ -2,7 +2,7 @@ import React from 'react';
 import styled from 'styled-components';
 import HomePageImage from "../../assets/homepageImage.png";
 import { useNavigate } from "react-router-dom";
-import Button from "../Button/Button.jsx";
+import Button from "../Button/Button";
 
 const HomeContainer = styled.div`
   display: flex;
@@ -105,7 +105,7 @@ const MainImage = styled.div`
   }
 `;
 
-export default function Home() {
+const Home: React.FC = () => {
   const navigate = useNavigate();
 
   return (
@@ -143,4 +143,6 @@ export default function Home() {
       </ImageSection>
     </HomeContainer>
   );
-}
+};
+
+export default Home;

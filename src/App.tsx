@@ -1,15 +1,15 @@
 import React from "react";
-import Header from "./components/header/header.jsx";
-import Footer from "./components/footer/footer.jsx";
-import MenuBrowse from "./components/MenuBrowse/MenuBrowse.jsx";
-import Home from "./components/HomePage/HomePage.jsx";
-import LoginPage from "./components/LoginPage/LoginPage.jsx";
-import ProtectedRoute from "./components/ProtectedRoute/ProtectedRoute.jsx";
-import { CartProvider } from "./components/CartContext/CartContext.jsx";
-import AuthProvider from "./components/AuthProvider/AuthProvider.jsx"; 
+import Header from "./components/header/header";
+import Footer from "./components/footer/footer";
+import MenuBrowse from "./components/MenuBrowse/MenuBrowse";
+import Home from "./components/HomePage/HomePage";
+import LoginPage from "./components/LoginPage/LoginPage";
+import ProtectedRoute from "./components/ProtectedRoute/ProtectedRoute";
+import { CartProvider } from "./components/CartContext/CartContext";
+import AuthProvider from "./components/AuthProvider/AuthProvider"; 
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 
-function App() {
+const App: React.FC = () => {
   return (
     <Router>
       <AuthProvider>
@@ -34,6 +34,6 @@ function App() {
       </AuthProvider>
     </Router>
   );
-}
+};
 
 export default App;

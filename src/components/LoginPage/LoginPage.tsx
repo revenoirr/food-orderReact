@@ -1,18 +1,18 @@
-import React, { useState } from "react";
-import { signInWithEmailAndPassword, createUserWithEmailAndPassword } from "firebase/auth";
+import React, { useState, FormEvent, ChangeEvent } from "react";
+import { signInWithEmailAndPassword, createUserWithEmailAndPassword, AuthError } from "firebase/auth";
 import { auth } from "../../firebase";
 import "./LoginPage.scss";
 import { useNavigate } from "react-router-dom";
-import Button from "../Button/Button.jsx";
+import Button from "../Button/Button";
 
-const LoginPage = () => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [error, setError] = useState(null);
-  const [isLogin, setIsLogin] = useState(true);
+const LoginPage: React.FC = () => {
+  const [email, setEmail] = useState<string>("");
+  const [password, setPassword] = useState<string>("");
+  const [error, setError] = useState<string | null>(null);
+  const [isLogin, setIsLogin] = useState<boolean>(true);
   const navigate = useNavigate();
 
-  const handleAuth = async (e) => {
+  const handleAuth = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setError(null);
 
@@ -25,7 +25,8 @@ const LoginPage = () => {
         navigate("/");
       }
     } catch (err) {
-      setError(err.message);
+      const firebaseError = err as AuthError;
+      setError(firebaseError.message);
     }
   };
 
@@ -43,7 +44,7 @@ const LoginPage = () => {
               type="email"
               id="email"
               value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              onChange={(e: ChangeEvent<HTMLInputElement>) => setEmail(e.target.value)}
               required
               placeholder="Enter your email"
             />
@@ -55,7 +56,7 @@ const LoginPage = () => {
               type="password"
               id="password"
               value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              onChange={(e: ChangeEvent<HTMLInputElement>) => setPassword(e.target.value)}
               required
               placeholder="Enter your password"
             />

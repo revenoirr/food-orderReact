@@ -1,17 +1,34 @@
 import React, { useContext } from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import "./header.scss";
 import logo from "../../assets/logo.svg";
 import cartIcon from "../../assets/cart1.svg";
-import { CartContext } from "../CartContext/CartContext.jsx";
-import useAuth from "../../hooks/useAuth";
+import { CartContext, CartContextType } from "../CartContext/CartContext.tsx";
+import useAuth from "../../hooks/useAuth.tsx";
 
+interface AuthContextType {
+  currentUser: {
+    email: string;
+  } | null;
+  logout: () => Promise<void>;
+}
 
-const Header = () => {
-  const { cartCount } = useContext(CartContext);
-  const { currentUser, logout } = useAuth();
+interface UseAuthReturn {
+  currentUser: AuthContextType['currentUser'];
+  logout: () => Promise<void>;
+}
 
-  const handleLogout = async () => {
+const Header: React.FC = () => {
+  const cartContext = useContext(CartContext);
+  if (!cartContext) {
+    throw new Error('Header must be used within a CartProvider');
+  }
+  const { cartCount } = cartContext;
+  const auth = useAuth();
+  const { currentUser, logout } = auth as UseAuthReturn;
+  const location = useLocation();
+
+  const handleLogout = async (): Promise<void> => {
     try {
       await logout();
     } catch (error) {
