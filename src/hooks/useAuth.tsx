@@ -1,12 +1,34 @@
-import { useContext } from "react";
-import { AuthContext } from "../context/AuthContext";
+import { useAppSelector, useAppDispatch } from '../hooks';
+import { signOut } from 'firebase/auth';
+import { auth } from '../firebase';
+import { clearUser } from '../slices/authSlice';
+import { User } from 'firebase/auth';
 
-const useAuth = () => {
-  const context = useContext(AuthContext);
-  if (!context) {
-    throw new Error("useAuth must be used within an AuthProvider");
-  }
-  return context;
+interface AuthContextType {
+  currentUser: User | null;
+  loading: boolean;
+  logout: () => Promise<void>;
+}
+
+export const useAuth = (): AuthContextType => {
+  const dispatch = useAppDispatch();
+  const { currentUser, loading } = useAppSelector(state => state.auth);
+
+  const logout = async (): Promise<void> => {
+    try {
+      await signOut(auth);
+      dispatch(clearUser());
+    } catch (error) {
+      console.error('Logout error:', error);
+      throw error;
+    }
+  };
+
+  return {
+    currentUser,
+    loading,
+    logout,
+  };
 };
 
 export default useAuth;

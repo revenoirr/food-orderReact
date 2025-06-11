@@ -1,19 +1,14 @@
-import { useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { setLoading, setError, setData, addApiLog, clearApiLogs, resetFetchState } from '../slices/fetchslice';
+import type { FetchOptions, ApiLog } from '../slices/fetchslice';
 
-interface FetchOptions {
-  method?: string;
-  payload?: any;
-  headers?: Record<string, string>;
-  [key: string]: any;
-}
-
-interface ApiLog {
-  timestamp: string;
-  url: string;
-  method: string;
-  payload: any | null;
-  status: number;
-  timeLogged: string;
+interface RootState {
+  fetch: {
+    loading: boolean;
+    error: string | null;
+    data: any | null;
+    apiLogs: ApiLog[];
+  };
 }
 
 interface FetchResponse<T> {
@@ -22,34 +17,14 @@ interface FetchResponse<T> {
 }
 
 const useFetch = () => {
-  const [loading, setLoading] = useState<boolean>(false);
-  const [error, setError] = useState<string | null>(null);
-  const [data, setData] = useState<any | null>(null);
-
-  const logApiCall = (url: string, payload: any | null, status: number, method: string): void => {
-    try {
-      const existingLogs: ApiLog[] = JSON.parse(localStorage.getItem('apiLogs') || '[]');
-      const newLog: ApiLog = {
-        timestamp: new Date().toISOString(),
-        url,
-        method,
-        payload: payload || null,
-        status,
-        timeLogged: new Date().toLocaleString()
-      };
-      const updatedLogs: ApiLog[] = [...existingLogs, newLog];
-      localStorage.setItem('apiLogs', JSON.stringify(updatedLogs.slice(-100)));
-      console.log('API Call Logged:', newLog);
-    } catch (err) {
-      console.error('Error logging API call to local storage:', err instanceof Error ? err.message : String(err));
-    }
-  };
+  const dispatch = useDispatch();
+  const { loading, error, data, apiLogs } = useSelector((state: RootState) => state.fetch);
 
   const request = async <T = any>(url: string, options: FetchOptions = {}): Promise<FetchResponse<T>> => {
     const { method = 'GET', payload = null, ...restOptions } = options;
     
-    setLoading(true);
-    setError(null);
+    dispatch(setLoading(true));
+    dispatch(setError(null));
     
     try {
       const fetchOptions: RequestInit = {
@@ -68,16 +43,31 @@ const useFetch = () => {
       const response = await fetch(url, fetchOptions);
       const responseData: T = await response.json();
       
-      logApiCall(url, payload, response.status, method);
-      setLoading(false);
-      setData(responseData);
+      // Log the API call
+      dispatch(addApiLog({
+        url,
+        method,
+        payload,
+        status: response.status
+      }));
+      
+      dispatch(setLoading(false));
+      dispatch(setData(responseData));
       
       return { data: responseData, status: response.status };
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : String(err);
-      setError(errorMessage);
-      setLoading(false);
-      logApiCall(url, payload, 0, method);
+      dispatch(setError(errorMessage));
+      dispatch(setLoading(false));
+      
+      // Log failed API call
+      dispatch(addApiLog({
+        url,
+        method,
+        payload,
+        status: 0
+      }));
+      
       throw err;
     }
   };
@@ -95,21 +85,15 @@ const useFetch = () => {
     request<T>(url, { ...options, method: 'DELETE' });
 
   const getApiLogs = (): ApiLog[] => {
-    try {
-      return JSON.parse(localStorage.getItem('apiLogs') || '[]');
-    } catch (err) {
-      console.error('Error retrieving API logs from local storage:', err instanceof Error ? err.message : String(err));
-      return [];
-    }
+    return apiLogs;
   };
 
-  const clearApiLogs = (): void => {
-    try {
-      localStorage.removeItem('apiLogs');
-      console.log('API logs cleared from local storage');
-    } catch (err) {
-      console.error('Error clearing API logs from local storage:', err instanceof Error ? err.message : String(err));
-    }
+  const clearLogs = (): void => {
+    dispatch(clearApiLogs());
+  };
+
+  const resetState = (): void => {
+    dispatch(resetFetchState());
   };
 
   return {
@@ -121,7 +105,9 @@ const useFetch = () => {
     error,
     data,
     getApiLogs,
-    clearApiLogs
+    clearApiLogs: clearLogs,
+    resetFetchState: resetState,
+    apiLogs
   };
 };
 
