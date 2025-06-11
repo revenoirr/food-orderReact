@@ -1,4 +1,6 @@
 import React, { useState, ChangeEvent } from "react";
+import { useDispatch } from "react-redux";
+import { addToCart } from "../../slices/cartSlice"; 
 import "./../ProductCard/ProductCard.scss";
 import Button from "../Button/Button";
 
@@ -7,20 +9,20 @@ export interface Item {
   id?: string | number;
   meal: string;
   price: number;
-  category?: string;  // Added to match Meal type in MenuBrowse
+  category?: string;
   img?: string;
   instructions?: string;
   // Add other properties that might be in the item object
 }
 
-// Define the props interface for the ProductCard component
+// Simplified props interface - no longer need onAddToCart callback
 export interface ProductCardProps {
   item: Item;
-  onAddToCart: (item: Item, quantity: number) => void;
 }
 
-const ProductCard: React.FC<ProductCardProps> = ({ item, onAddToCart }) => {
+const ProductCard: React.FC<ProductCardProps> = ({ item }) => {
   const [quantity, setQuantity] = useState<number>(1);
+  const dispatch = useDispatch();
 
   if (!item) {
     return null; 
@@ -33,7 +35,21 @@ const ProductCard: React.FC<ProductCardProps> = ({ item, onAddToCart }) => {
   };
 
   const handleAddToCart = (): void => {
-    onAddToCart(item, quantity);
+    // Dispatch the addToCart action directly
+    dispatch(addToCart({ 
+      item: {
+        id: item.id || `${item.meal}-${Date.now()}`, // Ensure we have an ID
+        quantity: 0, // This will be set by the action
+        ...item // Spread all item properties
+      }, 
+      quantity 
+    }));
+    
+    // Optional: Reset quantity to 1 after adding to cart
+    setQuantity(1);
+    
+    // Optional: Show success message or feedback
+    console.log(`Added ${quantity} ${item.meal}(s) to cart`);
   };
 
   return (

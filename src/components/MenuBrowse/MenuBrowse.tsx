@@ -1,10 +1,10 @@
-import React, { useState, useEffect, useContext, useRef, useCallback } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import "./MenuBrowse.scss";
 import PhoneTooltip from "../PhoneTooltip/phoneToolTip.tsx";
 import ProductCard, { Item } from "../ProductCard/ProductCard.tsx";
 import Button from "../Button/Button.tsx";
 import { useApi } from "../../services/api.tsx";
-import { CartContext, CartContextType, CartItem } from "../CartContext/CartContext.tsx";
+import { useCart, CartItem } from "../../hooks/useCart";
 
 interface Meal {
   id: string | number;
@@ -34,13 +34,9 @@ const initialVisibleCount = 6;
 const incrementCount = 6;
 
 const MenuBrowse: React.FC = () => {
-  const cartContext = useContext(CartContext);
+  // Use the Redux-based useCart hook instead of useContext
+  const { addToCart } = useCart();
   
-  if (!cartContext) {
-    throw new Error("MenuBrowse must be used within a CartProvider");
-  }
-  
-  const { addToCart } = cartContext;
   const [activeTab, setActiveTab] = useState<string>("dessert");
   const [menuItems, setMenuItems] = useState<MenuItems>({
     dessert: [],
