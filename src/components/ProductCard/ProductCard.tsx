@@ -1,26 +1,28 @@
 import React, { useState, ChangeEvent } from "react";
+import { useDispatch } from "react-redux";
+import { useNavigate } from "react-router-dom";
+import { addToCart } from "../../slices/cartSlice"; 
 import "./../ProductCard/ProductCard.scss";
 import Button from "../Button/Button";
 
-// Define the interface for the menu item
 export interface Item {
   id?: string | number;
   meal: string;
   price: number;
-  category?: string;  // Added to match Meal type in MenuBrowse
+  category?: string;
   img?: string;
   instructions?: string;
-  // Add other properties that might be in the item object
 }
 
-// Define the props interface for the ProductCard component
 export interface ProductCardProps {
   item: Item;
-  onAddToCart: (item: Item, quantity: number) => void;
 }
 
-const ProductCard: React.FC<ProductCardProps> = ({ item, onAddToCart }) => {
+const ProductCard: React.FC<ProductCardProps> = ({ item }) => {
   const [quantity, setQuantity] = useState<number>(1);
+  const [showSuccess, setShowSuccess] = useState<boolean>(false);
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   if (!item) {
     return null; 
@@ -33,7 +35,27 @@ const ProductCard: React.FC<ProductCardProps> = ({ item, onAddToCart }) => {
   };
 
   const handleAddToCart = (): void => {
-    onAddToCart(item, quantity);
+    dispatch(addToCart({ 
+      item: {
+        id: item.id || `${item.meal}-${Date.now()}`, 
+        quantity: 0, 
+        ...item 
+      }, 
+      quantity 
+    }));
+    
+    setQuantity(1);
+    setShowSuccess(true);
+    
+    setTimeout(() => {
+      setShowSuccess(false);
+    }, 2000);
+    
+    console.log(`Added ${quantity} ${item.meal}(s) to cart`);
+  };
+
+  const handleGoToCart = (): void => {
+    navigate('/order');
   };
 
   return (
@@ -90,6 +112,19 @@ const ProductCard: React.FC<ProductCardProps> = ({ item, onAddToCart }) => {
             Add to cart
           </Button>
         </div>
+
+        {showSuccess && (
+          <div className="success-message">
+            <p>✓ Added to cart!</p>
+            <Button
+              variant="secondary"
+              onClick={handleGoToCart}
+              className="view-cart-btn"
+            >
+              View Cart
+            </Button>
+          </div>
+        )}
       </div>
     </div>
   );
