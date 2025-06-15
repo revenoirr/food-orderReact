@@ -1,5 +1,6 @@
 import React, { useState, ChangeEvent } from "react";
 import { useDispatch } from "react-redux";
+import { useNavigate } from "react-router-dom";
 import { addToCart } from "../../slices/cartSlice"; 
 import "./../ProductCard/ProductCard.scss";
 import Button from "../Button/Button";
@@ -19,7 +20,9 @@ export interface ProductCardProps {
 
 const ProductCard: React.FC<ProductCardProps> = ({ item }) => {
   const [quantity, setQuantity] = useState<number>(1);
+  const [showSuccess, setShowSuccess] = useState<boolean>(false);
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   if (!item) {
     return null; 
@@ -42,8 +45,17 @@ const ProductCard: React.FC<ProductCardProps> = ({ item }) => {
     }));
     
     setQuantity(1);
+    setShowSuccess(true);
+    
+    setTimeout(() => {
+      setShowSuccess(false);
+    }, 2000);
     
     console.log(`Added ${quantity} ${item.meal}(s) to cart`);
+  };
+
+  const handleGoToCart = (): void => {
+    navigate('/order');
   };
 
   return (
@@ -100,6 +112,19 @@ const ProductCard: React.FC<ProductCardProps> = ({ item }) => {
             Add to cart
           </Button>
         </div>
+
+        {showSuccess && (
+          <div className="success-message">
+            <p>✓ Added to cart!</p>
+            <Button
+              variant="secondary"
+              onClick={handleGoToCart}
+              className="view-cart-btn"
+            >
+              View Cart
+            </Button>
+          </div>
+        )}
       </div>
     </div>
   );

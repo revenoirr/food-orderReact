@@ -1,88 +1,108 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
-interface CartItem {
+export interface CartItem {
   id: string | number;
+  meal: string;
+  price: number;
   quantity: number;
-  [key: string]: any; 
+  category?: string;
+  img?: string;
+  instructions?: string;
 }
 
 interface CartState {
-  cartItems: CartItem[];
-  cartCount: number;
+  cartItems: CartItem[]; 
+  cartCount: number;     
+  total: number;
 }
 
 const initialState: CartState = {
   cartItems: [],
   cartCount: 0,
+  total: 0,
+};
+
+const calculateTotal = (items: CartItem[]): number => {
+  return items.reduce((total, item) => total + (item.price * item.quantity), 0);
+};
+
+const calculateCartCount = (items: CartItem[]): number => {
+  return items.reduce((count, item) => count + item.quantity, 0);
 };
 
 const cartSlice = createSlice({
   name: 'cart',
   initialState,
   reducers: {
-    addToCart: (state, action: PayloadAction<{ item: CartItem; quantity: number | string }>) => {
+    addToCart: (state, action: PayloadAction<{ item: CartItem; quantity: number }>) => {
       const { item, quantity } = action.payload;
-      const parsedQty = parseInt(quantity.toString(), 10);
-      
-      if (isNaN(parsedQty) || parsedQty < 1) {
-        console.error("Invalid quantity provided to addToCart:", quantity);
-        return;
-      }
-      
-      const existingItemIndex = state.cartItems.findIndex(i => i.id === item.id);
-      
-      if (existingItemIndex >= 0) {
-        state.cartItems[existingItemIndex].quantity += parsedQty;
-        state.cartCount += parsedQty;
+      const existingItem = state.cartItems.find(cartItem => cartItem.id === item.id);
+
+      if (existingItem) {
+        existingItem.quantity += quantity;
       } else {
-        state.cartItems.push({ ...item, quantity: parsedQty });
-        state.cartCount += parsedQty;
+        state.cartItems.push({ ...item, quantity });
       }
+
+      state.total = calculateTotal(state.cartItems);
+      state.cartCount = calculateCartCount(state.cartItems);
     },
-    
+
     removeFromCart: (state, action: PayloadAction<string | number>) => {
-      const itemId = action.payload;
-      const itemToRemove = state.cartItems.find(item => item.id === itemId);
-      
-      if (itemToRemove) {
-        state.cartItems = state.cartItems.filter(item => item.id !== itemId);
-        state.cartCount -= itemToRemove.quantity;
-      }
+      const id = action.payload;
+      state.cartItems = state.cartItems.filter(item => item.id !== id);
+      state.total = calculateTotal(state.cartItems);
+      state.cartCount = calculateCartCount(state.cartItems);
     },
-    
-    updateQuantity: (state, action: PayloadAction<{ itemId: string | number; newQuantity: number | string }>) => {
+
+    updateQuantity: (state, action: PayloadAction<{ itemId: string | number; newQuantity: number }>) => {
       const { itemId, newQuantity } = action.payload;
-      const parsedQty = parseInt(newQuantity.toString(), 10);
+      const item = state.cartItems.find(cartItem => cartItem.id === itemId);
       
-      if (isNaN(parsedQty) || parsedQty < 0) {
-        console.error("Invalid quantity provided to updateQuantity:", newQuantity);
-        return;
-      }
-      
-      const existingItemIndex = state.cartItems.findIndex(item => item.id === itemId);
-      if (existingItemIndex === -1) return;
-      
-      const item = state.cartItems[existingItemIndex];
-      const quantityDifference = parsedQty - item.quantity;
-      
-      if (parsedQty === 0) {
-        state.cartItems = state.cartItems.filter(item => item.id !== itemId);
-        state.cartCount -= item.quantity;
-      } else {
-        state.cartItems[existingItemIndex].quantity = parsedQty;
-        state.cartCount += quantityDifference;
+      if (item) {
+        item.quantity = newQuantity;
+        state.total = calculateTotal(state.cartItems);
+        state.cartCount = calculateCartCount(state.cartItems);
       }
     },
-    
+
     clearCart: (state) => {
       state.cartItems = [];
       state.cartCount = 0;
+      state.total = 0;
+    },
+
+    incrementQuantity: (state, action: PayloadAction<string | number>) => {
+      const id = action.payload;
+      const item = state.cartItems.find(cartItem => cartItem.id === id);
+      
+      if (item) {
+        item.quantity += 1;
+        state.total = calculateTotal(state.cartItems);
+        state.cartCount = calculateCartCount(state.cartItems);
+      }
+    },
+
+    decrementQuantity: (state, action: PayloadAction<string | number>) => {
+      const id = action.payload;
+      const item = state.cartItems.find(cartItem => cartItem.id === id);
+      
+      if (item && item.quantity > 1) {
+        item.quantity -= 1;
+        state.total = calculateTotal(state.cartItems);
+        state.cartCount = calculateCartCount(state.cartItems);
+      }
     },
   },
 });
 
-export const { addToCart, removeFromCart, updateQuantity, clearCart } = cartSlice.actions;
+export const { 
+  addToCart, 
+  removeFromCart, 
+  updateQuantity, 
+  clearCart, 
+  incrementQuantity, 
+  decrementQuantity 
+} = cartSlice.actions;
+
 export default cartSlice.reducer;
-
-
-export type { CartItem };

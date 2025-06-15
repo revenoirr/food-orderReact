@@ -58,10 +58,10 @@ const Header: React.FC = () => {
           )}
         </nav>
 
-        <div className="cart">
+        <Link to="/order" className="cart">
           <img src={cartIcon} alt="Cart" />
           <span className="cart-count">{cartCount}</span>
-        </div>
+        </Link>
       </div>
     </header>
   );
