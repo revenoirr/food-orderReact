@@ -1,3 +1,4 @@
+
 import React from "react";
 import { Link, useLocation } from "react-router-dom";
 import "./header.scss";
@@ -5,6 +6,7 @@ import logo from "../../assets/logo.svg";
 import cartIcon from "../../assets/cart1.svg";
 import { useCart } from "../../hooks/useCart";
 import useAuth from "../../hooks/useAuth.tsx";
+import ThemeToggle from "../ThemeToggle/ThemeToggle";
 
 interface AuthContextType {
   currentUser: {
@@ -57,6 +59,8 @@ const Header: React.FC = () => {
             <span className="user-email">{currentUser.email}</span>
           )}
         </nav>
+
+        <ThemeToggle />
 
         <Link to="/order" className="cart">
           <img src={cartIcon} alt="Cart" />
