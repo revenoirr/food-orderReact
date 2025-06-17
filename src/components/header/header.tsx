@@ -1,10 +1,12 @@
-import React, { useContext } from "react";
+
+import React from "react";
 import { Link, useLocation } from "react-router-dom";
 import "./header.scss";
 import logo from "../../assets/logo.svg";
 import cartIcon from "../../assets/cart1.svg";
-import { CartContext, CartContextType } from "../CartContext/CartContext.tsx";
+import { useCart } from "../../hooks/useCart";
 import useAuth from "../../hooks/useAuth.tsx";
+import ThemeToggle from "../ThemeToggle/ThemeToggle";
 
 interface AuthContextType {
   currentUser: {
@@ -19,11 +21,8 @@ interface UseAuthReturn {
 }
 
 const Header: React.FC = () => {
-  const cartContext = useContext(CartContext);
-  if (!cartContext) {
-    throw new Error('Header must be used within a CartProvider');
-  }
-  const { cartCount } = cartContext;
+  const { cartCount } = useCart();
+  
   const auth = useAuth();
   const { currentUser, logout } = auth as UseAuthReturn;
   const location = useLocation();
@@ -61,10 +60,12 @@ const Header: React.FC = () => {
           )}
         </nav>
 
-        <div className="cart">
+        <ThemeToggle />
+
+        <Link to="/order" className="cart">
           <img src={cartIcon} alt="Cart" />
           <span className="cart-count">{cartCount}</span>
-        </div>
+        </Link>
       </div>
     </header>
   );

@@ -1,34 +1,30 @@
-import React, { useState, useEffect, ReactNode } from "react";
-import { onAuthStateChanged, signOut, User } from "firebase/auth";
+import React, { useEffect, ReactNode } from "react";
+import { onAuthStateChanged } from "firebase/auth";
 import { auth } from "../../firebase";
-import { AuthContext } from "../../context/AuthContext";
+import { useAppDispatch, useAppSelector } from "../../hooks";
+import { setUser, setLoading } from "../../slices/authSlice";
 
 interface AuthProviderProps {
   children: ReactNode;
 }
 
 const AuthProvider = ({ children }: AuthProviderProps) => {
-  const [currentUser, setCurrentUser] = useState<User | null>(null);
-  const [loading, setLoading] = useState(true);
-
-  const logout = () => signOut(auth);
+  const dispatch = useAppDispatch();
+  const loading = useAppSelector(state => state.auth.loading);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
-      setCurrentUser(user);
-      setLoading(false);
+      dispatch(setUser(user));
     });
 
     return unsubscribe;
-  }, []);
+  }, [dispatch]);
 
-  const value = { currentUser, logout };
+  if (loading) {
+    return <div>Loading...</div>; 
+  }
 
-  return (
-    <AuthContext.Provider value={value}>
-      {!loading && children}
-    </AuthContext.Provider>
-  );
+  return <>{children}</>;
 };
 
 export default AuthProvider;
