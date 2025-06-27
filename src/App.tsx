@@ -9,6 +9,7 @@ import Footer from "./components/footer/footer";
 import MenuBrowse from "./components/MenuBrowse/MenuBrowse";
 import Home from "./components/HomePage/HomePage";
 import LoginPage from "./components/LoginPage/LoginPage";
+import OrderPage from "./components/OrderPage/OrderPage";
 import ProtectedRoute from "./components/ProtectedRoute/ProtectedRoute";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 
@@ -26,6 +27,11 @@ const App: React.FC = () => {
                 <Route path="/menu" element={
                   <ProtectedRoute>
                     <MenuBrowse />
+                  </ProtectedRoute>
+                } />
+                <Route path="/order" element={
+                  <ProtectedRoute>
+                    <OrderPage />
                   </ProtectedRoute>
                 } />
                 <Route path="/company" element={<div>Company Page</div>} />
