@@ -1,12 +1,14 @@
-@use "sass:color";
+ @use "sass:color";
 
 .menu-item {
   display: flex;
-  background-color: white;
+  background-color: var(--card-bg); 
+  color: var(--text-color); 
   border-radius: 8px;
   overflow: hidden;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 1.05);
   text-align: left;
+  border-color: black;
   
   @media (max-width: 576px) {
     flex-direction: column;
@@ -57,6 +59,7 @@
     font-size: 18px;
     font-weight: 600;
     margin: 0;
+    color: var(--text-color); 
   }
   
   .menu-item-price {
@@ -67,7 +70,8 @@
   
   .menu-item-description {
     font-size: 14px;
-    color: #777;
+    color: var(--text-color); 
+    opacity: 0.7; 
     margin-bottom: 15px;
     flex-grow: 1;
   }
@@ -83,6 +87,18 @@
       border: 1px solid var(--border-color);
       border-radius: 4px;
       text-align: center;
+      background-color: var(--card-bg); 
+      color: var(--text-color); 
+      &::placeholder {
+        color: var(--text-color);
+        opacity: 0.6;
+      }
+      
+      &:focus {
+        outline: none;
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 2px rgba(53, 184, 190, 0.2);
+      }
     }
   }
   
