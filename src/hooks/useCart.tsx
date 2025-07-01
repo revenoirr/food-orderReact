@@ -16,7 +16,8 @@ export const useCart = (): CartContextType => {
   const { cartItems, cartCount } = useAppSelector(state => state.cart);
 
   const addToCart = (item: CartItem, quantity: number | string) => {
-    dispatch(addToCartAction({ item, quantity }));
+    const numQuantity = typeof quantity === 'string' ? parseInt(quantity, 10) : quantity;
+    dispatch(addToCartAction({ item, quantity: numQuantity }));
   };
 
   const removeFromCart = (itemId: string | number) => {
@@ -24,7 +25,8 @@ export const useCart = (): CartContextType => {
   };
 
   const updateQuantity = (itemId: string | number, newQuantity: number | string) => {
-    dispatch(updateQuantityAction({ itemId, newQuantity }));
+    const numQuantity = typeof newQuantity === 'string' ? parseInt(newQuantity, 10) : newQuantity;
+    dispatch(updateQuantityAction({ itemId, newQuantity: numQuantity }));
   };
 
   const clearCart = () => {
