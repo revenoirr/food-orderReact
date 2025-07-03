@@ -43,7 +43,6 @@ const useFetch = () => {
       const response = await fetch(url, fetchOptions);
       const responseData: T = await response.json();
       
-      // Log the API call
       dispatch(addApiLog({
         url,
         method,
@@ -60,7 +59,7 @@ const useFetch = () => {
       dispatch(setError(errorMessage));
       dispatch(setLoading(false));
       
-      // Log failed API call
+
       dispatch(addApiLog({
         url,
         method,
