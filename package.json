@@ -1,8 +1,8 @@
 {
   "name": "myproject",
   "private": true,
-  "version": "0.0.0",
   "homepage": "https://revenoirr.github.io/food-orderReact",
+  "version": "0.0.0",
   "type": "module",
   "scripts": {
   "dev": "vite",
