@@ -153,7 +153,7 @@ const OrderPage: React.FC = () => {
                     min="1"
                     max="99"
                     value={item.quantity}
-                    onChange={(e) => handleQuantityChange(item.id, parseInt(e.target.value) || 1)}
+                    onChange={(e) => {const value = e.target.value; const newQuantity = value === '' ? 1 : parseInt(value);handleQuantityChange(item.id, newQuantity);}}
                     className="quantity-input"
                   />
                 </div>
