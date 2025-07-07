@@ -18,7 +18,7 @@ const App: React.FC = () => {
     <Provider store={store}>
       <AuthProvider>
         <ThemeProvider>
-          <Router basename="/food-orderReact">
+          <Router>
             <div className="app">
               <Header />
               <div className="main-content">
