@@ -1,6 +1,5 @@
-
 import React from "react";
-import { Link, useLocation } from "react-router-dom";
+import { NavLink } from "react-router-dom";
 import "./header.scss";
 import logo from "../../assets/logo.svg";
 import cartIcon from "../../assets/cart1.svg";
@@ -16,16 +15,14 @@ interface AuthContextType {
 }
 
 interface UseAuthReturn {
-  currentUser: AuthContextType['currentUser'];
+  currentUser: AuthContextType["currentUser"];
   logout: () => Promise<void>;
 }
 
 const Header: React.FC = () => {
   const { cartCount } = useCart();
-  
   const auth = useAuth();
   const { currentUser, logout } = auth as UseAuthReturn;
-  const location = useLocation();
 
   const handleLogout = async (): Promise<void> => {
     try {
@@ -43,18 +40,28 @@ const Header: React.FC = () => {
         </div>
 
         <nav className="nav">
-          <Link to="" className={location.pathname === "/" ? "active" : ""}>Home</Link>
-          
-          <Link to="menu" className={location.pathname === "/menu" ? "active" : ""}>Menu</Link>
-          
-          <Link to="company" className={location.pathname === "/company" ? "active" : ""}>Company</Link>
-          
+          <NavLink to="" end className={({ isActive }) => isActive ? "active" : ""}>
+            Home
+          </NavLink>
+
+          <NavLink to="menu" className={({ isActive }) => isActive ? "active" : ""}>
+            Menu
+          </NavLink>
+
+          <NavLink to="company" className={({ isActive }) => isActive ? "active" : ""}>
+            Company
+          </NavLink>
+
           {currentUser ? (
-            <a href="#" onClick={handleLogout} className="logout-link">Logout</a>
+            <a href="#" onClick={handleLogout} className="logout-link">
+              Logout
+            </a>
           ) : (
-            <Link to="login" className={location.pathname === "/login" ? "active" : ""}>Login</Link>
+            <NavLink to="login" className={({ isActive }) => isActive ? "active" : ""}>
+              Login
+            </NavLink>
           )}
-          
+
           {currentUser && (
             <span className="user-email">{currentUser.email}</span>
           )}
@@ -62,10 +69,10 @@ const Header: React.FC = () => {
 
         <ThemeToggle />
 
-        <Link to="order" className="cart">
+        <NavLink to="order" className="cart">
           <img src={cartIcon} alt="Cart" />
           <span className="cart-count">{cartCount}</span>
-        </Link>
+        </NavLink>
       </div>
     </header>
   );
