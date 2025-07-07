@@ -1,5 +1,5 @@
 import React from 'react';
-import './../PhoneToolTip/PhoneTooltip.scss';
+import './PhoneTooltip.scss';
 
 interface PhoneTooltipProps {
   phoneNumber: string;
