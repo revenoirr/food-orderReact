@@ -11,30 +11,36 @@ import OrderPage from "./components/OrderPage/OrderPage";
 import NotFoundPage from "./components/notFoundPage/notFoundPage";
 import ProtectedRoute from "./components/ProtectedRoute/ProtectedRoute";
 import { ThemeProvider } from "./context/ThemeContext";
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { HashRouter as Router, Routes, Route } from "react-router-dom";
 
 const App: React.FC = () => {
   return (
     <Provider store={store}>
       <AuthProvider>
         <ThemeProvider>
-          <Router basename="/food-orderReact">
+          <Router>
             <div className="app">
               <Header />
               <div className="main-content">
                 <Routes>
                   <Route path="/" element={<Home />} />
                   <Route path="/login" element={<LoginPage />} />
-                  <Route path="/menu" element={
-                    <ProtectedRoute>
-                      <MenuBrowse />
-                    </ProtectedRoute>
-                  } />
-                  <Route path="/order" element={
-                    <ProtectedRoute>
-                      <OrderPage />
-                    </ProtectedRoute>
-                  } />
+                  <Route
+                    path="/menu"
+                    element={
+                      <ProtectedRoute>
+                        <MenuBrowse />
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="/order"
+                    element={
+                      <ProtectedRoute>
+                        <OrderPage />
+                      </ProtectedRoute>
+                    }
+                  />
                   <Route path="/company" element={<div>Company Page</div>} />
                   <Route path="*" element={<NotFoundPage />} />
                 </Routes>
