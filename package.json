@@ -1,6 +1,7 @@
 {
   "name": "myproject",
   "private": true,
+  "homepage": "https://revenoirr.github.io/food-orderReact",
   "version": "0.0.0",
   "type": "module",
   "scripts": {
@@ -9,7 +10,9 @@
     "lint": "eslint .",
     "preview": "vite preview",
     "test": "vitest --environment=jsdom",
-    "test:run": "vitest run"
+    "test:run": "vitest run",
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -d dist"
   },
   "dependencies": {
     "@reduxjs/toolkit": "^2.8.2",
@@ -24,6 +27,7 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.21.0",
+    "@tailwindcss/postcss": "^4.1.11",
     "@testing-library/jest-dom": "^6.6.3",
     "@testing-library/react": "^16.3.0",
     "@testing-library/user-event": "^14.6.1",
@@ -37,6 +41,7 @@
     "eslint": "^9.21.0",
     "eslint-plugin-react-hooks": "^5.1.0",
     "eslint-plugin-react-refresh": "^0.4.19",
+    "gh-pages": "^6.3.0",
     "globals": "^15.15.0",
     "jsdom": "^25.0.1",
     "postcss": "^8.5.3",

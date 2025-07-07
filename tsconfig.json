@@ -18,5 +18,5 @@
     "allowImportingTsExtensions": true,
     "types": ["vitest/globals", "@testing-library/jest-dom", "node"]
   },
-  "include": ["src", "tests", "vite.config.ts"]
+  "include": ["src", "tests", "vitest.config.ts"]
 }
