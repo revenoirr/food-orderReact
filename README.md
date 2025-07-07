@@ -1,5 +1,5 @@
 Food order react website 
-React, HTML5, Redux Toolkit, Jest, TypeScript, FireBase, Vite........//
+React, HTML5, Redux Toolkit, Jest, TypeScript, FireBase, Vite
 
 ![Main Page](./src/assets/photos/image.png)
 
