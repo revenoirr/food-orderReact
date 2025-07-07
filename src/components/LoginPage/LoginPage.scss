@@ -7,12 +7,13 @@
 }
 
 .login-container {
-  background-color: white;
+  background-color: var(--card-bg);
   border-radius: 8px;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
   padding: 30px;
   width: 100%;
   max-width: 400px;
+  transition: background-color 0.3s ease;
 
   h2 {
     color: var(--primary-color);
@@ -43,28 +44,37 @@
     border: 1px solid var(--border-color);
     border-radius: 4px;
     font-size: 1rem;
-    transition: border-color 0.3s;
+    background-color: var(--card-bg);
+    color: var(--text-color);
+    transition: border-color 0.3s, background-color 0.3s;
 
     &:focus {
       border-color: var(--primary-color);
       outline: none;
     }
+
+    &::placeholder {
+      color: var(--text-color);
+      opacity: 0.6;
+    }
   }
 }
 
 .error-message {
-  background-color: #ffebee;
-  color: #d32f2f;
+  background-color: var(--error-bg, #ffebee);
+  color: var(--error-color, #d32f2f);
   padding: 10px;
   border-radius: 4px;
   margin-bottom: 20px;
   font-size: 0.9rem;
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 .form-actions {
   display: flex;
   gap: 10px;
   margin-top: 10px;
+  justify-content: space-around;
 }
 
 .submit-btn,
@@ -88,12 +98,13 @@
 }
 
 .cancel-btn {
-  background-color: white;
+  background-color: var(--card-bg);
   color: var(--text-color);
   border: 1px solid var(--border-color);
+  transition: background-color 0.3s, color 0.3s, border-color 0.3s;
 
   &:hover {
-    background-color: #f5f5f5;
+    background-color: var(--secondary-color);
   }
 }
 

@@ -8,6 +8,7 @@ import MenuBrowse from "./components/MenuBrowse/MenuBrowse";
 import Home from "./components/HomePage/HomePage";
 import LoginPage from "./components/LoginPage/LoginPage";
 import OrderPage from "./components/OrderPage/OrderPage";
+import NotFoundPage from "./components/notFoundPage/notFoundPage";
 import ProtectedRoute from "./components/ProtectedRoute/ProtectedRoute";
 import { ThemeProvider } from "./context/ThemeContext";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
@@ -35,6 +36,7 @@ const App: React.FC = () => {
                     </ProtectedRoute>
                   } />
                   <Route path="/company" element={<div>Company Page</div>} />
+                  <Route path="*" element={<NotFoundPage />} />
                 </Routes>
               </div>
               <Footer />
