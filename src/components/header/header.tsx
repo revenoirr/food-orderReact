@@ -43,16 +43,16 @@ const Header: React.FC = () => {
         </div>
 
         <nav className="nav">
-          <Link to="/" className={location.pathname === "/" ? "active" : ""}>Home</Link>
+          <Link to="" className={location.pathname === "/" ? "active" : ""}>Home</Link>
           
-          <Link to="/menu" className={location.pathname === "/menu" ? "active" : ""}>Menu</Link>
+          <Link to="menu" className={location.pathname === "/menu" ? "active" : ""}>Menu</Link>
           
-          <Link to="/company" className={location.pathname === "/company" ? "active" : ""}>Company</Link>
+          <Link to="company" className={location.pathname === "/company" ? "active" : ""}>Company</Link>
           
           {currentUser ? (
             <a href="#" onClick={handleLogout} className="logout-link">Logout</a>
           ) : (
-            <Link to="/login" className={location.pathname === "/login" ? "active" : ""}>Login</Link>
+            <Link to="login" className={location.pathname === "/login" ? "active" : ""}>Login</Link>
           )}
           
           {currentUser && (
@@ -62,7 +62,7 @@ const Header: React.FC = () => {
 
         <ThemeToggle />
 
-        <Link to="/order" className="cart">
+        <Link to="order" className="cart">
           <img src={cartIcon} alt="Cart" />
           <span className="cart-count">{cartCount}</span>
         </Link>
