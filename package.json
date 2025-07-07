@@ -2,15 +2,19 @@
   "name": "myproject",
   "private": true,
   "version": "0.0.0",
+  "homepage": "https://revenoirr.github.io/food-orderReact",
   "type": "module",
   "scripts": {
-    "dev": "vite",
-    "build": "vite build",
-    "lint": "eslint .",
-    "preview": "vite preview",
-    "test": "vitest --environment=jsdom",
-    "test:run": "vitest run"
-  },
+  "dev": "vite",
+  "build": "vite build",
+  "preview": "vite preview",
+  "lint": "eslint .",
+  "test": "vitest --environment=jsdom",
+  "test:run": "vitest run",
+  "predeploy": "npm run build",
+  "deploy": "gh-pages -d dist"
+},
+
   "dependencies": {
     "@reduxjs/toolkit": "^2.8.2",
     "@tailwindcss/vite": "^4.1.6",
